@@ -66,10 +66,3 @@
 - `CubeMX_Config/`：STM32CubeMX 工程生成文件
 - `figures/`：原理图、结构图等
 
-## 贡献
-
-欢迎提交 issue 和 PR，完善本项目！
-
-## License
-
-本项目采用 MIT License，详见 LICENSE 文件。

@@ -15,7 +15,7 @@
 #include <rttlogo.h>
 #include "ap3216c.h"
 #include "mg90s.h"
-
+#include <drv_common.h>
 #include <stdio.h>
 #define DBG_TAG "main"
 #define DBG_LVL         DBG_LOG
@@ -37,7 +37,7 @@
 #define PIN_MOTOR_3        GET_PIN(A, 4)      // PA4:
 #define PIN_MOTOR_4        GET_PIN(A, 7)      // PA7:
 
-#define fan_P     GET_PIN(E, 14)      // PE14
+#define fan_P     GET_PIN(D, 12)      // PD12
 
 /* 电机1 电机2配置引脚 输出模式 */
 static void Motor_Iint_all()
@@ -447,7 +447,7 @@ int main(void)
     rt_uint8_t i = 0;
     rt_uint16_t ps_data;//距离数据变量
     //光照、湿度阈值
-    int humi_max=50;
+    int humi_max=80;
     int light_max=80;
     //光照变量
     float brightness;
@@ -590,10 +590,10 @@ int main(void)
              rt_kprintf("hcsr501:have people (PIN_LOW)\n");
               lcd_show_string(2, 129, 24, war);
               /* 蜂鸣器打开 */
-              rt_pin_write(PIN_BEEP,PIN_HIGH);
+              rt_pin_write(PIN_BEEP,PIN_LOW);
               rt_thread_mdelay(500);
               /* 蜂鸣器关闭 */
-              rt_pin_write(PIN_BEEP,PIN_LOW);
+              rt_pin_write(PIN_BEEP,PIN_HIGH);
          }
          // 显示光照变化状态和电机状态
          if (brightness > last_brightness) {
@@ -624,14 +624,14 @@ int main(void)
             rt_pin_write(PIN_LED_R, 0);
 
             //风扇打开
-            rt_pin_write(fan_P,PIN_LOW);
+            rt_pin_write(fan_P,PIN_HIGH);
 
          }
          else {
              //红灯灭
              rt_pin_write(PIN_LED_R, 1);
              //风扇关闭
-             rt_pin_write(fan_P,PIN_HIGH);
+             rt_pin_write(fan_P,PIN_LOW);
          }
          
          /*蓝光LED控制逻辑：只受红外线传感器控制
