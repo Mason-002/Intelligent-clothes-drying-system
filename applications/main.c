@@ -15,7 +15,7 @@
 #include <rttlogo.h>
 #include "ap3216c.h"
 #include "mg90s.h"
-#include <drv_common.h>
+
 #include <stdio.h>
 #define DBG_TAG "main"
 #define DBG_LVL         DBG_LOG
@@ -427,16 +427,7 @@ MSH_CMD_EXPORT(pwm_sg90_sample, pwm sample);
  * 硬件连接
  *MG90S接线：
 
- *红色线 → 5V电源 (建议使用外部电源)
-
- *棕色线 → GND
-
- *橙色信号线 → 星火一号的PWM1通道1引脚 (如PA8)
- *橙色信号线
- * hcsr-501
- * gnd-gnd
- * vcc-5v
- * dout -pd8;
+ 
  */
 int main(void)
 {
@@ -447,7 +438,7 @@ int main(void)
     rt_uint8_t i = 0;
     rt_uint16_t ps_data;//距离数据变量
     //光照、湿度阈值
-    int humi_max=80;
+    int humi_max=50;
     int light_max=80;
     //光照变量
     float brightness;
@@ -541,6 +532,7 @@ int main(void)
 
     while(1)
     {
+
         //读取温湿度数据
         read_temp_humi(&temperature, &humidity);    //读取数据
                  rt_kprintf("humidity   : %d.%d %%\n", (int)humidity, (int)(humidity * 10) % 10);
@@ -590,10 +582,10 @@ int main(void)
              rt_kprintf("hcsr501:have people (PIN_LOW)\n");
               lcd_show_string(2, 129, 24, war);
               /* 蜂鸣器打开 */
-              rt_pin_write(PIN_BEEP,PIN_LOW);
+              rt_pin_write(PIN_BEEP,PIN_HIGH);
               rt_thread_mdelay(500);
               /* 蜂鸣器关闭 */
-              rt_pin_write(PIN_BEEP,PIN_HIGH);
+              rt_pin_write(PIN_BEEP,PIN_LOW);
          }
          // 显示光照变化状态和电机状态
          if (brightness > last_brightness) {
