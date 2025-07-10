@@ -1,73 +1,75 @@
-# LCD 显示例程
+# 智能窗户 Intelligent Window System
 
-## 简介
+本项目为基于 STM32 的智能窗户控制系统，支持自动/手动开合窗户，适用于智能家居场景。
 
-本例程主要介绍了如何在 LCD 上显示文字和图片。
+## 目录结构
 
-## 硬件说明
-
-星火 1 号开发板板载的是一块 1.3 寸，分辨率为 240x240 的 LCD 显示屏，显示效果十分细腻。显示屏的驱动芯片是 ST7789 v3, 通信接口使用的是 8080 并口，通过 fsmc 模拟出驱动时序和单片机进行通讯。使用了 8 根数据线传输数据，一根地址选择线作为芯片的使能信号。
-
-![LCD 原理图](figures/lcd.png)
-
-![LCD 位置图](figures/board.png)
-
-## 软件说明
-
-本例程的源码位于 `/projects/03_driver_lcd`。
-
-显示图片和文字的源代码位于 libraries/Board_Drivers/lcd/drv_lcd.c 中。
-
-在 main 函数中，通过调用已经封装好的 LCD API 函数，首先执行的是清屏操作，将 LCD 全部刷成白色。然后设置画笔的颜色为黑色，背景色为白色。接着显示 RT-Thread 的 LOGO。最后会显示一些信息，包括 16x16 像素， 24x24 像素和 32x32 像素的三行英文字符，一条横线和一个同心圆。
-
-```c
-int main(void)
-{
-    lcd_clear(WHITE);
-
-    /* show RT-Thread logo */
-    lcd_show_image(0, 0, 240, 69, image_rttlogo);
-
-    /* set the background color and foreground color */
-    lcd_set_color(WHITE, BLACK);
-
-    /* show some string on lcd */
-    lcd_show_string(10, 69, 16, "Hello, RT-Thread!");
-    lcd_show_string(10, 69 + 16, 24, "RT-Thread");
-    lcd_show_string(10, 69 + 16 + 24, 32, "RT-Thread");
-
-    /* draw a line on lcd */
-    lcd_draw_line(0, 69 + 16 + 24 + 32, 240, 69 + 16 + 24 + 32);
-
-    /* draw a concentric circles */
-    lcd_draw_point(120, 194);
-    for (int i = 0; i < 46; i += 4)
-    {
-        lcd_draw_circle(120, 194, i);
-    }
-    return 0;
-}
+```
+智能窗户/
+├── applications/         # 应用层代码（主程序、电机控制等）
+│   ├── main.c
+│   ├── mg90s.c
+│   ├── mg90s.h
+│   └── ...
+├── board/                # 板级支持包（BSP）
+│   ├── board.c
+│   ├── board.h
+│   └── CubeMX_Config/    # STM32CubeMX 工程配置
+│       ├── Inc/
+│       └── Src/
+├── figures/              # 项目相关电路图、结构图
+├── Kconfig               # RT-Thread 配置文件
+├── SConstruct/SConscript # 构建脚本
+├── makefile.targets      # Makefile 目标
+├── project.uvprojx       # Keil 工程文件
+└── README.md             # 项目说明文档
 ```
 
-## 运行
+---
 
-### 编译 & 下载
+如需英文版或有其他补充内容，请告知！  
+你可以直接将上面内容复制到你的 `README.md` 文件中。
 
-- RT-Thread Studio：在 RT-Thread Studio 的包管理器中下载 `STM32F407-RT-SPARK` 资源包，然后创建新工程，执行编译。
-- MDK：首先双击 mklinks.bat，生成 rt-thread 与 libraries 文件夹链接；再使用 Env 生成 MDK5 工程；最后双击 project.uvprojx 打开 MDK5 工程，执行编译。
+## 功能简介
 
-编译完成后，将开发板的 ST-Link USB 口与 PC 机连接，然后将固件下载至开发板。
+- 直流减速电机驱动，实现窗户自动开合
+- 可通过主控板按键或外部信号控制
+- 适配 RT-Thread 实时操作系统
+- 提供 LCD 显示支持
 
-### 运行效果
+## 快速开始
 
-按下复位按键重启开发板，观察开发板上 LCD 的实际效果。正常运行后，LCD 上会显示 RT-Thread LOGO，下面会显示 3 行大小为 16、 24、 32 像素的文字，文字下面是一行直线，直线的下方是一个同心圆。如下图所示：
+1. **硬件准备**  
+   - STM32F4 系列开发板  
+   - 直流减速电机  
+   - LCD 显示屏（可选）  
+   - 按键、传感器等外设
 
-![LCD 显示图案](figures/lcd_show_logo.png)
+2. **软件环境**  
+   - [Keil MDK](https://www.keil.com/) 或 [RT-Thread Studio](https://www.rt-thread.io/)
+   - [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)（可选）
+   - [RT-Thread](https://www.rt-thread.io/)
 
-## 注意事项
+3. **编译与下载**  
+   - 使用 Keil 打开 `project.uvprojx` 工程文件，编译并下载到开发板
+   - 或使用 SCons 构建脚本进行命令行编译
 
-屏幕的分辨率是 240x240，输入位置参数时要注意小于 240，不然会出现无法显示的现象。图像的取模方式为自上而下，自左向右，高位在前， 16 位色（RGB-565）。本例程未添加中文字库，不支持显示中文。
+4. **运行效果**  
+   - 上电后，窗户可根据设定自动或手动开合
+   - LCD 显示当前状态（如已连接）
 
-## 引用参考
+## 主要文件说明
 
-暂无。
+- `applications/main.c`：主程序入口
+- `applications/mg90s.c`、`mg90s.h`：电机驱动相关代码（如有需要可重命名为 motor.c/motor.h）
+- `board/board.c`、`board.h`：板级初始化
+- `CubeMX_Config/`：STM32CubeMX 工程生成文件
+- `figures/`：原理图、结构图等
+
+## 贡献
+
+欢迎提交 issue 和 PR，完善本项目！
+
+## License
+
+本项目采用 MIT License，详见 LICENSE 文件。
